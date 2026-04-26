@@ -9,20 +9,24 @@ Un bot Discord complet, développé en TypeScript, dédié à l'automatisation e
 * **Night Engine (Moteur de Nuit) :** Un système avancé qui gère automatiquement l'ordre des actions de la nuit. Il guide le MJ étape par étape et permet des interactions fluides avec les joueurs (ex: confirmations de cibles pour l'Assassin).
   
   > **Exemple d'une nuit guidée pour le Maître du Jeu :**
-  > ![Interface de Nuit MJ](assets/exemple-nuit-mj.png)
+  >
+  >  ![Interface de Nuit MJ](assets/exemple-nuit-mj.png)
 
 * **Gestion du Grimoire :** Interface permettant de visualiser et manipuler le grimoire de la partie en temps réel.
   
   > **Visualisation de l'état de la partie (Le Grimoire) :**
+  >
   > ![Grimoire Interactif](assets/image-mort-visualisation.png)
 
 * **Dashboard Interactif & Suivi :** Des panneaux de contrôle interactifs (Boutons, Menus, Modals) en messages privés et sur le serveur pour une expérience utilisateur optimale sans commandes textuelles fastidieuses.
   
   > **Résumé des journées et rôles :**
+  >
   > ![Résumé de Jour](assets/resume-jour.png)
   > 
   > **Évolution des nuits et morts au fil des tours :**
-  > ![Evolution de la Partie](assets/image-evolution-mort.png)
+  >
+  >  ![Evolution de la Partie](assets/image-evolution-mort.png)
 
 * **Attribution des Rôles :** Distribution automatique et sécurisée des rôles aux participants en début de partie.
 * **Base de données :** Suivi des statistiques et de l'état des parties en cours.
