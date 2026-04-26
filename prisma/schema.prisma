@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// MODÈLE DE DONNÉES - Blood on the Clocktower Bot
+// ============================================================
+
+/// Représente une partie en cours ou terminée
+model Game {
+  id        String   @id @default(cuid())
+  guildId   String   // ID du serveur Discord
+  channelId String   // ID du salon "Place du Village"
+  mjId      String   // ID Discord du Maître du Jeu
+  status    String   @default("SETUP") // SETUP | NIGHT | DAY | ENDED
+  phase     Int      @default(0) // Numéro du tour (Nuit 1, Jour 1, Nuit 2...)
+  winner    String?  // GOOD | EVIL | null (si pas fini)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  players   Player[]
+  logs      GameLog[]
+}
+
+/// Représente un joueur dans une partie
+model Player {
+  id             String  @id @default(cuid())
+  discordId      String  // ID Discord du joueur
+  gameId         String
+  game           Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  displayName    String  // Nom d'affichage au moment de la partie
+  avatarUrl      String? // URL de l'avatar pour le Grimoire
+  role           String  // Identifiant du rôle (ex: "grandmother", "sailor"...)
+  actualRole     String? // Rôle réel si différent (ex: si MJ a forcé un changement)
+
+  // Position dans le cercle (0-indexed, ordre circulaire)
+  seatOrder      Int
+
+  // États du joueur
+  isAlive        Boolean @default(true)
+  hasGhostVote   Boolean @default(true) // Le mort garde 1 vote fantôme
+  state          String  @default("NORMAL") // NORMAL | DRUNK | POISONED
+  alignment      String  @default("GOOD") // GOOD | EVIL
+
+  // Capacités utilisées (pour les pouvoirs "une fois par partie")
+  abilityUsed    Boolean @default(false)
+
+  // Spécifique Idiot : protégé de la 1ère mort
+  firstDeathBlocked Boolean @default(false)
+
+  // Spécifique Courtisan : tours restants d'ivresse infligée
+  courtierDrunkTurns Int @default(0)
+
+  // Index unique : un joueur Discord ne peut être que dans 1 partie à la fois
+  @@unique([discordId, gameId])
+
+  // État JSON additionnel (ex: pour "La Griffe" ou "Sorcier")
+  extraState     String?
+}
+
+/// Log de toutes les actions (audit trail pour /logs)
+model GameLog {
+  id        String   @id @default(cuid())
+  gameId    String
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  phase     String   // "NIGHT_1", "DAY_1", etc.
+  action    String   // Description de l'action
+  actor     String?  // Qui a fait l'action (ID Discord ou "SYSTEM")
+  target    String?  // Cible de l'action (ID Discord)
+  result    String?  // Résultat de l'action
+  createdAt DateTime @default(now())
+}
+
+/// Classement global et profil des joueurs (Win Tracker)
+model PlayerStats {
+  discordId    String   @id
+  username     String
+  gamesPlayed  Int      @default(0)
+  winsGood     Int      @default(0)
+  winsEvil     Int      @default(0)
+  totalWins    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
